@@ -264,7 +264,7 @@ with tab4:
         )
         
         if preset == "Default (Induction + Maintenance)":
-            st.session_state.config.dosing_schedule = [0, 1, 2, 3, 7, 11, 15, 19, 23, 27, 31, 35]
+			st.session_state.config.dosing_schedule = [0, 1, 2, 3, 7, 11, 15, 19, 23, 27, 31, 35]
         elif preset == "Induction Only":
             st.session_state.config.dosing_schedule = [0, 1, 2]
         elif preset == "Quarterly":
@@ -273,7 +273,7 @@ with tab4:
             st.session_state.config.dosing_schedule = list(range(0, min(13, st.session_state.config.total_months + 1)))
         elif preset == "Custom":
         	st.markdown("Enter dosing times in **MONTHS (decimals allowed)**, comma-separated. Note: Convert weeks to months by dividing by ~4.33, and days by ~30.4.")
-            custom_input = st.text_input(
+            custom_input = st.text_input( 
                 "Enter schedule (comma-separated)",
                 value=", ".join(map(str, st.session_state.config.dosing_schedule))
             )
