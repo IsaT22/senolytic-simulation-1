@@ -39,7 +39,7 @@ class SimulationConfig:
     sasp_senescence_feedback_strength_sd: float = 0.0002 # From previous research
     
     # Dosing schedule (user adjustable, with presets)
-    dosing_schedule: List[int] = field(default_factory=lambda: [0, 1, 2, 3, 7, 11, 15, 19, 23, 27, 31, 35])
+    dosing_schedule: List[float] = field(default_factory=lambda: [0.0, 1.0, 2.0, 3.0, 7.0, 11.0, 15.0, 19.0, 23.0, 27.0, 31.0, 35.0])
 
 
 class ImmuneSystem:
@@ -256,7 +256,8 @@ class Simulation:
         
         self.history: List[Dict] = []
         self.is_running = False
-        self.current_month = 0
+        self.current_month = 0.0
+        self.doses_administered: Set[float] = set()
 
         # Store initial values for summary stats
         self.initial_senescent_t_cells = self.immune_system.senescent_t_cells
@@ -274,8 +275,10 @@ class Simulation:
         
         dt_years = 1.0 / 12.0
         
+        current_integer_month = int(self.current_month)
+        
         # Update lymphopenia recovery
-        self.side_effect_module.update_lymphopenia(self.current_month)
+        self.side_effect_module.update_lymphopenia(current_integer_month)
         
         # Update biological processes
         sasp_feedback = self.sasp_module.get_sasp_feedback_effect()
@@ -285,10 +288,22 @@ class Simulation:
         
         # Apply senolytic dose if scheduled
         dose_administered = False
-        if self.current_month in self.config.dosing_schedule:
-            self.senolytic_module.administer_dose()
-            self.side_effect_module.induce_lymphopenia(self.current_month)
-            dose_administered = True
+        
+        doses_to_administer_now = []
+        next_month_time = self.current_month + 1.0
+        
+        for scheduled_month in self.config.dosing_schedule:
+        	if scheduled_month >= self.current_month and scheduled_month < next_month_time:
+        		if scheduled_month not in self.doses_administered:
+        			doses_to_administer_now.append(scheduled_month)
+        			
+        if doses_to_administer_now:
+        	self.senolytic_module.administer_dose()
+        	self.side_effect_module.induce_lymphopenia(current_integer_month)
+        	dose_administered = True
+        	
+        	for scheduled_month in doses_to_administer_now:
+        	self.doses_administered.add(scheduled_month)
         
         # Record state
         state = {
@@ -307,7 +322,7 @@ class Simulation:
         }
         
         self.history.append(state)
-        self.current_month += 1
+        self.current_month += 1.0
         
         return state
     
