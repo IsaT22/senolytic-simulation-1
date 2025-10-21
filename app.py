@@ -264,14 +264,16 @@ with tab4:
         )
         
         if preset == "Default (Induction + Maintenance)":
-			st.session_state.config.dosing_schedule = [0, 1, 2, 3, 7, 11, 15, 19, 23, 27, 31, 35]
+            # Correct Line 267 with float values and 12 spaces of indentation
+            st.session_state.config.dosing_schedule = [0.0, 1.0, 2.0, 3.0, 7.0, 11.0, 15.0, 19.0, 23.0, 27.0, 31.0, 35.0]
         elif preset == "Induction Only":
-            st.session_state.config.dosing_schedule = [0, 1, 2]
+            # Correct this line with float values and 12 spaces of indentation
+            st.session_state.config.dosing_schedule = [0.0, 1.0, 2.0]
         elif preset == "Quarterly":
+            # No change needed here, as list(range) produces integers, which is fine
             st.session_state.config.dosing_schedule = list(range(0, st.session_state.config.total_months + 1, 3))
-        # In app.py, inside the tab4: Dosing Schedule section (around line 270)
-
         elif preset == "Monthly":
+            # No change needed here
             st.session_state.config.dosing_schedule = list(range(0, min(13, st.session_state.config.total_months + 1)))
         elif preset == "Custom":
             # NEW LINE: Added instructions for conversion
