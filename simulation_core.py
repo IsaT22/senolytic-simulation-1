@@ -303,7 +303,7 @@ class Simulation:
         	dose_administered = True
         	
         	for scheduled_month in doses_to_administer_now:
-        	self.doses_administered.add(scheduled_month)
+        	    self.doses_administered.add(scheduled_month)
         
         # Record state
         state = {
