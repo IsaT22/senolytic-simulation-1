@@ -272,12 +272,13 @@ with tab4:
         elif preset == "Monthly":
             st.session_state.config.dosing_schedule = list(range(0, min(13, st.session_state.config.total_months + 1)))
         elif preset == "Custom":
+        	st.markdown("Enter dosing times in **MONTHS (decimals allowed)**, comma-separated. Note: Convert weeks to months by dividing by ~4.33, and days by ~30.4.")
             custom_input = st.text_input(
-                "Enter months (comma-separated)",
+                "Enter schedule (comma-separated)",
                 value=", ".join(map(str, st.session_state.config.dosing_schedule))
             )
             try:
-                st.session_state.config.dosing_schedule = sorted(list(set([int(x.strip()) for x in custom_input.split(",") if x.strip()]))) # Ensure unique and sorted
+                st.session_state.config.dosing_schedule = sorted(list(set([float(x.strip()) for x in custom_input.split(",") if x.strip()]))) # Ensure unique and sorted
             except ValueError:
                 st.error("Invalid input. Please enter numbers separated by commas.")
     
@@ -289,7 +290,7 @@ with tab4:
         
         # Create timeline
         months = np.arange(0, st.session_state.config.total_months + 1)
-        doses = [1 if m in st.session_state.config.dosing_schedule else 0 for m in months]
+        doses = [1 if any(m <= s < m + 1 for s in st.session_state.config.dosing_schedule) else 0 for m in months]
         
         ax.bar(months, doses, color=["#1f77b4" if d == 1 else "#d3d3d3" for d in doses], width=0.8)
         ax.set_xlabel("Months", fontsize=12)
