@@ -269,18 +269,25 @@ with tab4:
             st.session_state.config.dosing_schedule = [0, 1, 2]
         elif preset == "Quarterly":
             st.session_state.config.dosing_schedule = list(range(0, st.session_state.config.total_months + 1, 3))
+        # In app.py, inside the tab4: Dosing Schedule section (around line 270)
+
         elif preset == "Monthly":
             st.session_state.config.dosing_schedule = list(range(0, min(13, st.session_state.config.total_months + 1)))
         elif preset == "Custom":
-        	st.markdown("Enter dosing times in **MONTHS (decimals allowed)**, comma-separated. Note: Convert weeks to months by dividing by ~4.33, and days by ~30.4.")
+            # NEW LINE: Added instructions for conversion
+            st.markdown("Enter dosing times in **MONTHS (decimals allowed)**, comma-separated. Note: Convert weeks to months by dividing by ~4.33, and days by ~30.4.")
+            
+            # Line 276 is likely here, make sure it is indented 8 spaces
             custom_input = st.text_input( 
-                "Enter schedule (comma-separated)",
+                "Enter months (comma-separated)",
+                # CHANGE: Use float-mapped values for display
                 value=", ".join(map(str, st.session_state.config.dosing_schedule))
             )
             try:
-                st.session_state.config.dosing_schedule = sorted(list(set([float(x.strip()) for x in custom_input.split(",") if x.strip()]))) # Ensure unique and sorted
+                # CHANGE: Use float() instead of int()
+                st.session_state.config.dosing_schedule = sorted(list(set([float(x.strip()) for x in custom_input.split(",") if x.strip()])))
             except ValueError:
-                st.error("Invalid input. Please enter numbers separated by commas.")
+                st.error("Invalid input. Please enter numbers (including decimals) separated by commas.")
     
     with col2:
         st.subheader("Current Schedule")
